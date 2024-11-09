@@ -20,8 +20,8 @@ async def handle_client(websocket, path):
         clients.remove(websocket)
 
 async def main():
-    server = await websockets.serve(handle_client, "127.0.0.1", 5555)
-    print("Server started on ws://127.0.0.1:5555")
+    server = await websockets.serve(handle_client, "Put your ip and port here") #Put your ip and port here
+    print("Server started on your ip and port")
     await server.wait_closed()
 
 asyncio.run(main())
