@@ -7,6 +7,9 @@
     <title>The Best Chat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+    
 
     <style>
         body {
@@ -23,7 +26,7 @@
             font-weight: bold;
         }
 
-        .my-form {
+        .eingabe {
             position: fixed;
             bottom: 24px;
             left: 80px;
@@ -58,60 +61,8 @@
             padding: 10px 20px;
             transition: all 0.3s ease;
         }
-
-        .container {
-            padding-top: 50px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
         .message-container {
             margin-bottom: 10px;
-        }
-
-        .message-card {
-            margin-bottom: 10px;
-            background-color: #2c2c2c;
-            border-radius: 10px;
-        }
-
-        .message {
-            background-color: #444;
-            color: white;
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        .my-message {
-            background-color: #8A2BE2;
-            color: white;
-        }
-
-        .other-message {
-            background-color: #333;
-            color: #ccc;
-        }
-
-        .leaderboard {
-            position: fixed;
-            top: 50px;
-            right: 20px;
-            background-color: #2c2c2c;
-            padding: 20px;
-            border-radius: 10px;
-            color: white;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .leaderboard-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .leaderboard-item {
-            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -119,103 +70,31 @@
 <body>
     <nav class="navbar">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">THE BEST CHAT</a>
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                THE BEST CHAT
+                <i class="bi bi-chat ms-2" style="font-size: 2.5rem; color: white;"></i>
+            </a>
         </div>
     </nav>
 
-    <div class="container" id="chatBox">
-        <!-- Chat messages will appear here -->
-    </div>
-
-    <div class="leaderboard" id="leaderboard">
-        <div class="leaderboard-title">Online Users</div>
-        <div id="userList"></div>
-    </div>
-
-    <form class="input-group mb-3 my-form">
+    <form class="input-group mb-3 eingabe">
         <input type="text" class="form-control" id="messageInput" placeholder="Sende eine Nachricht ...">
         <button class="btn" type="button" id="sendButton">SENDEN</button>
     </form>
 
     <script>
-        const socket = new WebSocket("PUT YOUR IP AND YOUR PORT HERE"); //PUT YOU ID AND PORT HERE
-        let userName = prompt("Enter your name to start chatting:");
+        const socket = new WebSocket("ws://127.0.0.1:5555");// verbindet mit server
+        let userName = prompt("Enter your name to start chatting:");//username abfrage
 
-        // Sende den Benutzernamen an den Server, wenn die Verbindung hergestellt wird
-        socket.onopen = function () {
-            socket.send(userName);  // Sende den Benutzernamen zum Server
-        };
-
-        socket.onmessage = function (event) {
-            if (event.data.startsWith("Online:")) {
-                // Aktualisiere das Leaderboard
-                const users = event.data.replace("Online: ", "").split(", ");
-                const userList = document.getElementById("userList");
-                userList.innerHTML = "";  // Alte Liste löschen
-
-                // Neue Benutzerliste anzeigen
-                users.forEach(function (user) {
-                    const userItem = document.createElement("div");
-                    userItem.classList.add("leaderboard-item");
-                    userItem.textContent = user;
-                    userList.appendChild(userItem);
-                });
-            } else {
-                // Chat-Nachricht empfangen und anzeigen
-                const messageContainer = document.createElement("div");
-                messageContainer.classList.add("message-container");
-
-                const messageCard = document.createElement("div");
-                messageCard.classList.add("card", "message-card");
-
-                const messageBody = document.createElement("div");
-                messageBody.classList.add("card-body", "message");
-
-                const messageData = event.data.split(":");
-                if (messageData[0] === userName) {
-                    messageBody.classList.add("my-message");
-                } else {
-                    messageBody.classList.add("other-message");
-                }
-
-                messageBody.textContent = messageData[1];
-                messageCard.appendChild(messageBody);
-                messageContainer.appendChild(messageCard);
-
-                document.getElementById("chatBox").appendChild(messageContainer);
-                document.getElementById("chatBox").scrollTop = document.getElementById("chatBox").scrollHeight;
+        document.getElementById("sendButton").onclick = function () { //funktion wenn man auf Senden drückt
+            const message = document.getElementById("messageInput").value;// message = input 
+                const messageWithName = userName + ": " + message; // username + message = nachricht
+                socket.send(messageWithName);//absenden zum server
+                document.getElementById("messageInput").value = "";//zurücksetzen
             }
-        };
 
-        document.getElementById("sendButton").onclick = function () {
-            const message = document.getElementById("messageInput").value;
-            if (message) {
-                const messageWithName = userName + ": " + message;
-
-                // Nachricht ins Chatfenster einfügen
-                const messageContainer = document.createElement("div");
-                messageContainer.classList.add("message-container");
-
-                const messageCard = document.createElement("div");
-                messageCard.classList.add("card", "message-card");
-
-                const messageBody = document.createElement("div");
-                messageBody.classList.add("card-body", "message");
-
-                messageBody.classList.add("my-message");
-                messageBody.textContent = message;
-
-                messageCard.appendChild(messageBody);
-                messageContainer.appendChild(messageCard);
-                document.getElementById("chatBox").appendChild(messageContainer);
-
-                socket.send(messageWithName);
-
-                // Eingabefeld zurücksetzen
-                document.getElementById("messageInput").value = "";
-            }
-        };
     </script>
 </body>
-
 </html>
+
+
