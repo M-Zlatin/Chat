@@ -20,8 +20,8 @@ async def handle_client(websocket, path): #code welcher sich um leute kümmert d
         clients.remove(websocket) # remove client
 
 async def main(): #server starten def
-    server = await websockets.serve(handle_client, "127.0.0.1", 5555) #meine ip 
-    print("Server started on ws://127.0.0.1:5555") # ansage
+    server = await websockets.serve(handle_client, "", 5555) #add your ip and port (my port is here 5555) but you can change it
+    print("Server started") # ansage
     await server.wait_closed()
 
 asyncio.run(main()) #sever starten wurde in line 22-25 beschriben
